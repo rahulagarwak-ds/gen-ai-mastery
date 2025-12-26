@@ -379,6 +379,253 @@ class AsyncLogger:
 
 ---
 
+## 8. Cost Management
+
+### Token Pricing (per 1M tokens)
+
+```python
+PRICING = {
+    # OpenAI
+    "gpt-4o": {"input": 2.50, "output": 10.00},
+    "gpt-4o-mini": {"input": 0.15, "output": 0.60},
+    "gpt-4-turbo": {"input": 10.00, "output": 30.00},
+    "text-embedding-3-small": {"input": 0.02, "output": 0.0},
+    "text-embedding-3-large": {"input": 0.13, "output": 0.0},
+
+    # Anthropic
+    "claude-3-5-sonnet": {"input": 3.00, "output": 15.00},
+    "claude-3-haiku": {"input": 0.25, "output": 1.25},
+
+    # Google
+    "gemini-1.5-pro": {"input": 1.25, "output": 5.00},
+    "gemini-1.5-flash": {"input": 0.075, "output": 0.30},
+}
+
+def calculate_cost(model: str, input_tokens: int, output_tokens: int) -> float:
+    """Calculate cost in USD."""
+    prices = PRICING.get(model, {"input": 0, "output": 0})
+    return (
+        (input_tokens / 1_000_000) * prices["input"] +
+        (output_tokens / 1_000_000) * prices["output"]
+    )
+```
+
+### Budget Manager
+
+```python
+from dataclasses import dataclass, field
+from datetime import datetime, timedelta
+from typing import Callable
+
+@dataclass
+class Budget:
+    daily_limit: float = 10.0    # USD per day
+    monthly_limit: float = 200.0  # USD per month
+    alert_threshold: float = 0.8  # Alert at 80%
+
+@dataclass
+class BudgetManager:
+    budget: Budget = field(default_factory=Budget)
+    on_alert: Callable[[str], None] = None
+    _daily_spend: float = 0.0
+    _monthly_spend: float = 0.0
+    _last_reset: datetime = field(default_factory=datetime.now)
+
+    def track(self, cost: float):
+        """Track spending and check limits."""
+        self._reset_if_needed()
+        self._daily_spend += cost
+        self._monthly_spend += cost
+
+        # Check alerts
+        if self._daily_spend >= self.budget.daily_limit * self.budget.alert_threshold:
+            self._alert(f"Daily budget {self._daily_spend / self.budget.daily_limit:.0%} used")
+
+        if self._monthly_spend >= self.budget.monthly_limit * self.budget.alert_threshold:
+            self._alert(f"Monthly budget {self._monthly_spend / self.budget.monthly_limit:.0%} used")
+
+    def can_spend(self, estimated_cost: float) -> bool:
+        """Check if spending is within limits."""
+        return (
+            self._daily_spend + estimated_cost <= self.budget.daily_limit and
+            self._monthly_spend + estimated_cost <= self.budget.monthly_limit
+        )
+
+    def get_remaining(self) -> dict:
+        """Get remaining budget."""
+        return {
+            "daily": self.budget.daily_limit - self._daily_spend,
+            "monthly": self.budget.monthly_limit - self._monthly_spend
+        }
+
+    def _alert(self, message: str):
+        if self.on_alert:
+            self.on_alert(message)
+
+    def _reset_if_needed(self):
+        now = datetime.now()
+        if now.date() > self._last_reset.date():
+            self._daily_spend = 0
+        if now.month > self._last_reset.month:
+            self._monthly_spend = 0
+        self._last_reset = now
+```
+
+### Cost Optimization Strategies
+
+#### 1. Model Selection by Task
+
+```python
+def select_model(task_type: str, quality_required: str) -> str:
+    """Select optimal model for task and quality."""
+
+    MODEL_MAP = {
+        # Simple tasks - use cheap models
+        ("classification", "low"): "gpt-4o-mini",
+        ("summarization", "low"): "gpt-4o-mini",
+        ("extraction", "low"): "gpt-4o-mini",
+
+        # Medium complexity
+        ("generation", "medium"): "gpt-4o-mini",
+        ("analysis", "medium"): "claude-3-haiku",
+
+        # High quality required
+        ("reasoning", "high"): "gpt-4o",
+        ("code", "high"): "claude-3-5-sonnet",
+        ("complex", "high"): "gpt-4o",
+    }
+
+    return MODEL_MAP.get((task_type, quality_required), "gpt-4o-mini")
+```
+
+#### 2. Prompt Optimization
+
+```python
+def optimize_prompt(prompt: str, max_tokens: int = 1000) -> str:
+    """Reduce prompt tokens while preserving meaning."""
+
+    # Remove excessive whitespace
+    prompt = " ".join(prompt.split())
+
+    # Truncate if needed
+    words = prompt.split()
+    if len(words) > max_tokens:
+        prompt = " ".join(words[:max_tokens]) + "..."
+
+    return prompt
+
+def estimate_tokens(text: str) -> int:
+    """Rough token estimate (4 chars ≈ 1 token)."""
+    return len(text) // 4
+```
+
+#### 3. Caching for Cost Reduction
+
+```python
+import hashlib
+
+class CostAwareCache:
+    def __init__(self, budget_manager: BudgetManager):
+        self.cache = {}
+        self.budget = budget_manager
+        self.cache_hits = 0
+        self.cache_misses = 0
+
+    def get_or_call(self, key: str, fn: Callable, estimated_cost: float):
+        """Cache result to avoid repeated API calls."""
+        cache_key = hashlib.md5(key.encode()).hexdigest()
+
+        if cache_key in self.cache:
+            self.cache_hits += 1
+            return self.cache[cache_key]
+
+        # Check budget before calling
+        if not self.budget.can_spend(estimated_cost):
+            raise Exception(f"Budget exceeded. Remaining: {self.budget.get_remaining()}")
+
+        result = fn()
+        self.cache[cache_key] = result
+        self.cache_misses += 1
+        return result
+
+    def savings_report(self) -> dict:
+        return {
+            "cache_hits": self.cache_hits,
+            "cache_misses": self.cache_misses,
+            "hit_rate": self.cache_hits / (self.cache_hits + self.cache_misses + 1e-8)
+        }
+```
+
+#### 4. Batching Requests
+
+```python
+async def batch_embeddings(
+    texts: list[str],
+    batch_size: int = 100
+) -> list[list[float]]:
+    """Batch embedding calls to reduce overhead."""
+    embeddings = []
+
+    for i in range(0, len(texts), batch_size):
+        batch = texts[i:i + batch_size]
+        response = await client.embeddings.create(
+            model="text-embedding-3-small",
+            input=batch
+        )
+        embeddings.extend([e.embedding for e in response.data])
+
+    return embeddings
+```
+
+### Cost Monitoring Dashboard
+
+```python
+@dataclass
+class CostReport:
+    period: str
+    total_cost: float
+    by_model: dict[str, float]
+    by_endpoint: dict[str, float]
+    daily_trend: list[float]
+    top_expensive_calls: list[dict]
+
+def generate_cost_report(logs: list[LLMLog], period_days: int = 30) -> CostReport:
+    """Generate cost analytics report."""
+
+    by_model = {}
+    by_endpoint = {}
+    daily = {}
+
+    for log in logs:
+        # By model
+        by_model[log.model] = by_model.get(log.model, 0) + log.cost_usd
+
+        # By endpoint
+        endpoint = log.metadata.get("endpoint", "unknown")
+        by_endpoint[endpoint] = by_endpoint.get(endpoint, 0) + log.cost_usd
+
+        # Daily
+        day = log.timestamp[:10]
+        daily[day] = daily.get(day, 0) + log.cost_usd
+
+    # Top expensive
+    sorted_logs = sorted(logs, key=lambda x: x.cost_usd, reverse=True)
+
+    return CostReport(
+        period=f"{period_days} days",
+        total_cost=sum(l.cost_usd for l in logs),
+        by_model=by_model,
+        by_endpoint=by_endpoint,
+        daily_trend=list(daily.values()),
+        top_expensive_calls=[
+            {"model": l.model, "cost": l.cost_usd, "tokens": l.input_tokens + l.output_tokens}
+            for l in sorted_logs[:10]
+        ]
+    )
+```
+
+---
+
 ## Quick Reference
 
 ### Structured Log

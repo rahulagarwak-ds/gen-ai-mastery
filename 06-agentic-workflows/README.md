@@ -9,6 +9,7 @@ Building AI agents that take action in the world.
 | 01  | [Tool Use](./01-tool-use/documentation.md)       | Function calling, tool schemas, execution  |
 | 02  | [LangGraph](./02-langgraph/documentation.md)     | Stateful agent graphs, cycles, checkpoints |
 | 03  | [Multi-Agent](./03-multi-agent/documentation.md) | Coordination, handoffs, hierarchies        |
+| 04  | [CrewAI](./04-crewai/documentation.md)           | Agents, tasks, crews, high-level framework |
 
 ## Capstone
 
@@ -21,4 +22,4 @@ Building AI agents that take action in the world.
 
 ## Time Estimate
 
-~40-50 hours for complete coverage
+~50-60 hours for complete coverage
