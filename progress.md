@@ -262,6 +262,21 @@ Track your progress through every document, drill, and project.
 - [ ] Drill 10: Conversational RAG
 - [ ] Project: RAG Toolkit
 
+### 05-advanced-rag
+
+- [ ] Doc: Read documentation
+- [ ] Drill 1: Query Expansion
+- [ ] Drill 2: HyDE
+- [ ] Drill 3: BM25 Sparse Search
+- [ ] Drill 4: Hybrid Search
+- [ ] Drill 5: Reciprocal Rank Fusion
+- [ ] Drill 6: Cross-Encoder Reranking
+- [ ] Drill 7: Embedding Cache
+- [ ] Drill 8: Semantic Cache
+- [ ] Drill 9: Streaming RAG
+- [ ] Drill 10: Production Pipeline
+- [ ] Project: Optimized Retriever
+
 ### Capstone
 
 - [ ] Build: Chat With Docs
@@ -353,6 +368,7 @@ Track your progress through every document, drill, and project.
 - [ ] Drill 7: Langfuse Decorator
 - [ ] Drill 8: Async Logger
 - [ ] Project: Cost Tracker
+- [ ] Project: Budget Manager
 
 ### 02-evaluation
 
@@ -428,6 +444,21 @@ Track your progress through every document, drill, and project.
 
 - [ ] Build: AI Research Assistant
 
+### 04-crewai
+
+- [ ] Doc: Read documentation
+- [ ] Drill 1: Create Agent
+- [ ] Drill 2: Create Task
+- [ ] Drill 3: Simple Crew
+- [ ] Drill 4: Task Dependencies
+- [ ] Drill 5: Add Tools
+- [ ] Drill 6: Custom Tool
+- [ ] Drill 7: Hierarchical Crew
+- [ ] Drill 8: Three-Agent Pipeline
+- [ ] Drill 9: Crew with Memory
+- [ ] Drill 10: Customer Support Crew
+- [ ] Project: Research Crew
+
 ---
 
 ## SQL Mastery (Parallel Track)
@@ -469,9 +500,9 @@ Track your progress through every document, drill, and project.
 | -------------------------- | ------ | ------- | -------- | -------- |
 | Month 1: Python Foundation | 21     | 21      | 8        | ✅ Ready |
 | Month 2: LLM Interface     | 4      | 42      | 3        | ✅ Ready |
-| Month 3: RAG               | 4      | 40      | 4        | ✅ Ready |
+| Month 3: RAG               | 5      | 50      | 5        | ✅ Ready |
 | Month 4: Backend           | 5      | 42      | 2        | ✅ Ready |
-| Month 5: Eval & Ops        | 3      | 24      | 4        | ✅ Ready |
-| Month 6: Agentic           | 3      | 24      | 1        | ✅ Ready |
+| Month 5: Eval & Ops        | 3      | 24      | 5        | ✅ Ready |
+| Month 6: Agentic           | 4      | 34      | 2        | ✅ Ready |
 | SQL Mastery                | 5      | 42      | 1        | ✅ Ready |
-| **Total**                  | **45** | **235** | **23**   | —        |
+| **Total**                  | **47** | **255** | **26**   | —        |

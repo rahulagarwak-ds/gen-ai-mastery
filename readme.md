@@ -85,6 +85,7 @@ Each module contains:
 | 02-vector-stores       | ChromaDB, Pinecone, pgvector                |
 | 03-document-processing | PDF/HTML parsing, chunking strategies       |
 | 04-rag-pipeline        | Ingestion, Retrieval, Reranking, Generation |
+| 05-advanced-rag        | Hybrid search, caching, latency, RAGAS      |
 
 **🏆 Capstone:** "Chat With Your Docs" — Q&A over a folder of documents.
 
@@ -114,11 +115,11 @@ Each module contains:
 
 ### Modules
 
-| Module            | Topics                                              |
-| ----------------- | --------------------------------------------------- |
-| 01-observability  | Logging, tracing, LangSmith/Langfuse, cost tracking |
-| 02-evaluation     | LLM-as-Judge, RAG metrics, retrieval evaluation     |
-| 03-prompt-testing | Prompt versioning, regression testing, A/B testing  |
+| Module            | Topics                                                 |
+| ----------------- | ------------------------------------------------------ |
+| 01-observability  | Logging, tracing, cost tracking, budget management     |
+| 02-evaluation     | LLM-as-Judge, RAG metrics, RAGAS, retrieval evaluation |
+| 03-prompt-testing | Prompt versioning, regression testing, A/B testing     |
 
 **🏆 Capstone:** "Eval Framework" — Automated evaluation pipeline for RAG systems.
 
@@ -135,6 +136,7 @@ Each module contains:
 | 01-tool-use    | Function calling, tool schemas, execution patterns |
 | 02-langgraph   | Graphs, nodes, edges, state, persistence           |
 | 03-multi-agent | Supervisor, handoffs, team coordination            |
+| 04-crewai      | Agents, tasks, crews, high-level multi-agent       |
 
 **🏆 Capstone:** "AI Research Assistant" — Searches web, executes code, writes reports.
 
@@ -173,10 +175,10 @@ Advanced SQL for AI Engineers — run alongside the main roadmap.
 | ---------------------------- | -------- | ------------------------------ |
 | Month 1: Python Foundation   | ✅ Ready | 21 docs, 21 drills, 8 projects |
 | Month 2: LLM Interface       | ✅ Ready | 4 docs, 42 drills, 3 projects  |
-| Month 3: RAG Fundamentals    | ✅ Ready | 4 docs, 40 drills, 4 projects  |
+| Month 3: RAG Fundamentals    | ✅ Ready | 5 docs, 50 drills, 5 projects  |
 | Month 4: Backend Engineering | ✅ Ready | 5 docs, 42 drills, 2 projects  |
-| Month 5: Evaluation & Ops    | ✅ Ready | 3 docs, 24 drills, 4 projects  |
-| Month 6: Agentic Workflows   | ✅ Ready | 3 docs, 24 drills, 1 project   |
+| Month 5: Evaluation & Ops    | ✅ Ready | 3 docs, 24 drills, 5 projects  |
+| Month 6: Agentic Workflows   | ✅ Ready | 4 docs, 34 drills, 2 projects  |
 | SQL Mastery                  | ✅ Ready | 5 docs, 42 drills, 1 project   |
 
 ---
